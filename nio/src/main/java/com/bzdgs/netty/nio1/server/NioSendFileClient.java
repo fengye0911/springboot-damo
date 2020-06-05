@@ -34,7 +34,7 @@ public class NioSendFileClient {
         //设置为非阻塞模式
         socketChannel.configureBlocking(false);
         //通过IP端口连接到
-        ByteBuffer buffer = ByteBuffer.allocate(1024);
+        ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024 * 1024);
         socketChannel.connect(new InetSocketAddress("localhost",8899));
         while (!socketChannel.finishConnect()){
 

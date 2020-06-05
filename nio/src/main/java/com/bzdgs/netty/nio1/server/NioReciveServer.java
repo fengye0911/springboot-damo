@@ -95,7 +95,7 @@ public class NioReciveServer {
                     buffer.get(bytes);
                     String fileName = new String(bytes,"utf-8");
                     System.out.println("fileName"+fileName);
-                    String distPaht = "E:\\test";
+                    String distPaht = "E:\\test\\";
                     String fullPath = distPaht+fileName;
                     File dir = new File(distPaht);
                     if (!dir.exists()){
