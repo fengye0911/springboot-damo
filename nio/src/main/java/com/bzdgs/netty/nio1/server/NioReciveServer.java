@@ -2,7 +2,11 @@ package com.bzdgs.netty.nio1.server;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.nio.ch.IOUtil;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -24,7 +28,7 @@ public class NioReciveServer {
     private Charset charset=Charset.forName("UTF-8");
     static class Client{
         String fileName;
-        String fileLength;
+        long fileLength;
         long startTime;
         InetSocketAddress remoteAddress;
         FileChannel channel;
@@ -75,19 +79,58 @@ public class NioReciveServer {
 
     }
 
-    private void processData(SelectionKey key) throws IOException {
+    private void processData(SelectionKey key)  {
         //获取通道
         SocketChannel channel = (SocketChannel)key.channel();
         Client client = clientMap.get(channel);
         //清空缓冲区
-        buffer.clear();
-        int read = channel.read(buffer);
-        while (read > 0){
-            if(null == client.fileName){
-                byte[] bytes = new byte[buffer.remaining()];
-                String fileName = new String(bytes, charset);
-                
+        int num =0;
+        try {
+            buffer.clear();
+            num = channel.read(buffer);
+            while (num > 0){
+                if(null == client.fileName){
+                    buffer.flip();
+                    byte[] bytes =new byte[buffer.remaining()];
+                    buffer.get(bytes);
+                    String fileName = new String(bytes,"utf-8");
+                    System.out.println("fileName"+fileName);
+                    String distPaht = "E:\\test";
+                    String fullPath = distPaht+fileName;
+                    File dir = new File(distPaht);
+                    if (!dir.exists()){
+                        dir.mkdir();
+                    }
+                    File file = new File(fullPath);
+                    FileChannel channel1 = new FileOutputStream(file).getChannel();
+                    client.fileName=fileName;
+                    client.channel=channel1;
+                }else if(0 ==client.fileLength){
+                    long fileLength = buffer.getLong();
+                    client.fileLength=fileLength;
+                    client.startTime=System.currentTimeMillis();
+                }else {
+                    client.channel.write(buffer);
+                }
+                buffer.clear();
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        //如果读取量为-1则说明读取结束
+        if (num ==-1){
+            try {
+                client.channel.close();
+                key.cancel();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        NioReciveServer server = new NioReciveServer();
+        server.startServer();
     }
 }
