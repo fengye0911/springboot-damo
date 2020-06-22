@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:hdp="http://www.springframework.org/schema/hadoop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/hadoop
+       http://www.springframework.org/schema/hadoop/spring-hadoop.xsd">
+    <bean/>
+    <hdp:configuration/>
+    <!--  引入外部配置  -->
+    <hdp:configuration resources="classpath:/custom-site.xml,classpath:/hq-site.xml"/>
+<!--    配置默认文件系统类型，hadoop文件存放路径-->
+<!--    <hdp:configuration>-->
+<!--        fs.defaultFS=hdfs://localhost:8020-->
+<!--        hadoop.tmp.dir=/tmp/hadoop-->
+<!--        electric=sea-->
+<!--    </hdp:configuration>-->
+
+    <hdp:configuration>
+        fs.defaultFS=${hd.fs}
+        hadoop.tmp.dir=file://${java.io.tmpdir}
+        hangar=${number:18}
+    </hdp:configuration>
+
+    <context:property-placeholder location="classpath:hadoop.properties" />
+
+</beans>

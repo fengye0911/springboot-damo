@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bzdgs.demo.mapper.LogMapper">
+    <resultMap id="BaseResultMap" type="com.bzdgs.demo.model.LogResultDTO">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="app_log" jdbcType="VARCHAR" property="appLog" />
+        <result column="user_id" jdbcType="VARCHAR" property="userId" />
+        <result column="org_id" jdbcType="VARCHAR" property="orgId" />
+        <result column="phone_number" jdbcType="VARCHAR" property="phoneNumber" />
+        <result column="work_code" jdbcType="VARCHAR" property="workCode" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="oper_time" jdbcType="BIGINT" property="operTime" />
+        <result column="module_code" jdbcType="VARCHAR" property="moduleCode" />
+        <result column="type" jdbcType="VARCHAR" property="type" />
+        <result column="log_type" jdbcType="SMALLINT" property="logType" />
+        <result column="url" jdbcType="VARCHAR" property="url" />
+        <result column="ip" jdbcType="VARCHAR" property="ip" />
+        <result column="time_consum" jdbcType="INTEGER" property="timeConsum" />
+        <result column="is_success" jdbcType="SMALLINT" property="isSuccess" />
+        <result column="op_desc" jdbcType="VARCHAR" property="opDesc" />
+<!--        <result column="in_para" jdbcType="VARCHAR" property="inPara" />-->
+<!--        <result column="out_para" jdbcType="VARCHAR" property="outPara" />-->
+        <result column="api_referer" jdbcType="VARCHAR" property="apiReferer" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        app_log,user_id,org_id,phone_number,work_code,name,oper_time,module_code,type,log_type,url,ip,time_consum,is_success,op_desc,api_referer
+  </sql>
+
+    <sql id="Base_Condition">
+        <if test="userId!=null and ''!=userId">
+            AND user_id = #{userId,jdbcType=VARCHAR}
+        </if>
+
+        <if test="userIds!=null and  userIds.size()!=0">
+            AND user_id in
+            <foreach collection="userIds" index="index" open="(" close=")" item="userId" separator=",">
+                #{userId,jdbcType=VARCHAR}
+            </foreach>
+        </if>
+
+        <if test="moduleCode!=null and ''!=moduleCode">
+            AND module_code = #{moduleCode,jdbcType=VARCHAR}
+        </if>
+        <if test="orgId!=null and ''!=orgId">
+            AND org_id = #{orgId,jdbcType=VARCHAR}
+        </if>
+
+        <if test="workCode!=null and ''!=workCode">
+            AND work_code = #{workCode,jdbcType=VARCHAR}
+        </if>
+
+        <if test="ip!=null and ''!=ip">
+            AND ip like concat('%', #{ip,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="phoneNumber!=null and ''!=phoneNumber">
+            AND phone_number like concat('%', #{phoneNumber,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="url!=null and ''!=url">
+            AND url like concat('%', #{url,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="name!=null and ''!=name">
+            AND name like concat('%', #{name,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="desc!=null and ''!=desc">
+            AND op_desc like concat('%', #{desc,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="inPara!=null and ''!=inPara">
+            AND in_para like concat('%', #{inPara,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="outPara!=null and ''!=outPara">
+            AND out_para like concat('%', #{outPara,jdbcType=VARCHAR},'%')
+        </if>
+
+        <if test="type!=null and ''!=type">
+            AND type = #{type,jdbcType=VARCHAR}
+        </if>
+
+        <if test="logType!=null">
+            AND log_type = #{logType,jdbcType=SMALLINT}
+        </if>
+        <if test="isSuccess!=null">
+            AND is_success = #{isSuccess,jdbcType=SMALLINT}
+        </if>
+        <if test="operTimeB!=null">
+            <![CDATA[ AND oper_time >= #{operTimeB,jdbcType=BIGINT} ]]>
+        </if>
+        <if test="operTimeE!=null">
+            <![CDATA[ AND oper_time <= #{operTimeE,jdbcType=BIGINT} ]]>
+        </if>
+        <if test="apiReferer != null and apiReferer != ''">
+            AND api_referer = #{apiReferer}
+        </if>
+    </sql>
+    <select id="page" parameterType="com.bzdgs.demo.query.LogQueryDTO" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from spsz_manage_app_log where 1=1
+        <if test="keyword!=null and ''!=keyword">
+            AND (
+            name like concat('%', #{keyword,jdbcType=VARCHAR},'%')
+            OR op_desc like concat('%', #{keyword,jdbcType=VARCHAR},'%')
+            )
+        </if>
+        <include refid="Base_Condition"/>
+        ORDER BY oper_time DESC
+    </select>
+    <select id="count" resultType="java.lang.Integer">
+        select count(1) from spsz_manage_app_log
+    </select>
+</mapper>
