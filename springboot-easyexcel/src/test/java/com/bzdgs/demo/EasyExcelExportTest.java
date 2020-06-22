@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -145,7 +147,7 @@ public class EasyExcelExportTest {
         String fileName = "E:\\temp\\" + "repeatedWrite" + System.currentTimeMillis() + ".xlsx";
         ExcelWriter excelWriter = null;
         try {
-
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             // 这里 需要指定写用哪个class去写
             excelWriter = EasyExcel.write(fileName, LogResultDTO.class).build();
 
@@ -182,6 +184,31 @@ public class EasyExcelExportTest {
             }
         }
     }
+
+    public void export(ConsumptionDetailQuery query, HttpServletResponse response) {
+        try {
+            String exportRedisFlag = "exportRedisFlag";
+            if(redisTemplate.hasKey(exportRedisFlag)) {
+                LOGGER.info("导出正在运行，请稍候重试");
+                errorResponse(response, "导出正在运行，请稍候重试", 501);
+                return;
+            }
+            List<RiskIndexExport> exportList;//用来存储查询到的数据
+            Sheet sheet1 = new Sheet(1, 0, ExportModel.class);
+            sheet1.setSheetName("sheet1");
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ExcelWriter writer = new ExcelWriter(out, ExcelTypeEnum.XLSX);
+            writer.write(exportList, sheet1);
+            writer.finish();
+            String fileName = "exportName";
+            zipOutput(response, out, fileName);
+	catch (IOException e) {
+                LOGGER.error("导出时写入数据到文件出错" + e.getMessage(), e);
+                errorResponse(response, "写入数据到文件出错", 500);
+            } finally {
+                redisTemplate.delete(exportRedisFlag);
+            }
+        }
 
     @Test
     public void repeatWrite2(){
