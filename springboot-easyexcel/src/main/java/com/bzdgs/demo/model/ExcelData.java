@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 public class ExcelData implements Serializable {
     private static final long serialVersionUID = 8683288107021034861L;
-    private List<String> titles;
+    private List<List<String>> titles;
     private List<List<Object>> rows;
     private String name;
     private float heightInPoints;
