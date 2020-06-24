@@ -229,7 +229,7 @@ public class EasyExcelExportTest {
         return bt3;
     }
     /**
-     * 把日志记录放到excel表中
+     * 组装数据
      * @param rows
      * @param logResultDtos
      */
@@ -322,6 +322,7 @@ public class EasyExcelExportTest {
         }
     }
 
+    //不同sheet,同一个对象
     @Test
     public void repeatWrite2(){
         // 方法2 如果写到不同的sheet 同一个对象
