@@ -13,7 +13,7 @@ import com.bzdgs.demo.model.ExcelData;
 import com.bzdgs.demo.model.LogResultDTO;
 import com.bzdgs.demo.query.LogQueryDTO;
 import com.bzdgs.demo.service.ILogService;
-import com.bzdgs.demo.util.EasyExcelExportUtil;
+import com.bzdgs.demo.util.EasyExcelUtil;
 import com.bzdgs.demo.util.FileUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,9 +28,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 /**
  * ClassName: demo.java
@@ -211,7 +212,7 @@ public class EasyExcelExportTest {
             }
             excelData.setRows(rows);
             try {
-                byte[] bytes = EasyExcelExportUtil.exportExcel(excelData,out);
+                byte[] bytes = EasyExcelUtil.exportExcel(excelData,out);
                 bytesAll = byteMerger(bytesAll, bytes);
             } catch (IOException e) {
                 e.printStackTrace();
